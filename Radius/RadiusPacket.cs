@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using Radius.Atributes;
-using Radius.Enums;
+using Radius.Attributes;
+using Radius.Utils;
+using Radius.Enum;
 
 namespace Radius
 {
@@ -136,18 +137,18 @@ namespace Radius
             switch (PacketType)
             {
                 case RadiusCode.ACCESS_REQUEST:
-                    _Authenticator = Utils.AccessRequestAuthenticator();
+                    _Authenticator = RadiusUtils.AccessRequestAuthenticator();
                     break;
                 case RadiusCode.ACCESS_ACCEPT:
-                    _Authenticator = Utils.ResponseAuthenticator(RawData, requestAuthenticator, sharedsecret);
+                    _Authenticator = RadiusUtils.ResponseAuthenticator(RawData, requestAuthenticator, sharedsecret);
                     break;
                 case RadiusCode.ACCESS_REJECT:
                     break;
                 case RadiusCode.ACCOUNTING_REQUEST:
-                    _Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
+                    _Authenticator = RadiusUtils.AccountingRequestAuthenticator(RawData, sharedsecret);
                     break;
                 case RadiusCode.ACCOUNTING_RESPONSE:
-                    _Authenticator = Utils.ResponseAuthenticator(RawData, requestAuthenticator, sharedsecret);
+                    _Authenticator = RadiusUtils.ResponseAuthenticator(RawData, requestAuthenticator, sharedsecret);
                     break;
                 case RadiusCode.ACCOUNTING_STATUS:
                     break;
@@ -162,13 +163,13 @@ namespace Radius
                 case RadiusCode.ACCESS_CHALLENGE:
                     break;
                 case RadiusCode.SERVER_STATUS:
-                    _Authenticator = Utils.AccessRequestAuthenticator(sharedsecret);
+                    _Authenticator = RadiusUtils.AccessRequestAuthenticator(sharedsecret);
                     break;
                 case RadiusCode.COA_REQUEST:
-                    _Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
+                    _Authenticator = RadiusUtils.AccountingRequestAuthenticator(RawData, sharedsecret);
                     break;
                 case RadiusCode.DISCONNECT_REQUEST:
-                    _Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
+                    _Authenticator = RadiusUtils.AccountingRequestAuthenticator(RawData, sharedsecret);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -221,7 +222,7 @@ namespace Radius
             newRawData[RawData.Length] = (byte)RadiusAttributeType.MESSAGE_AUTHENTICATOR;
             newRawData[RawData.Length + 1] = RADIUS_MESSAGE_AUTHENTICATOR_LENGTH;
             // Calculate the hash of the new array using the shared secret
-            HMACMD5 hmacmd5 = new HMACMD5(Encoding.ASCII.GetBytes(sharedSecret));
+            HMACMD5 hmacmd5 = new(Encoding.ASCII.GetBytes(sharedSecret));
             var hash = hmacmd5.ComputeHash(newRawData);
             // Copy the hash value into the 16 octects to replace the 0's with the actual hash
             Array.Copy(hash, 0, newRawData, newRawData.Length - RADIUS_MESSAGE_AUTH_HASH_LENGTH, hash.Length);

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using Radius.Enum;
+using Radius.Utils;
+using System;
 using System.Text;
-using System.Threading.Tasks;
-using Radius.Atributes;
-using Radius.Enums;
 
-namespace Radius
+namespace Radius.Attributes
 {
 	public class VendorSpecificAttribute : RadiusAttribute
 	{
@@ -73,32 +69,32 @@ namespace Radius
 
 		public static VendorSpecificAttribute CreateInt16(uint vendorId, byte vendorSpecificType, short vendorSpecificData)
 		{
-			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, RadiusUtils.GetNetworkBytes(vendorSpecificData));
 		}
 
 		public static VendorSpecificAttribute CreateUInt16(uint vendorId, byte vendorSpecificType, ushort vendorSpecificData)
 		{
-			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, RadiusUtils.GetNetworkBytes(vendorSpecificData));
 		}
 
 		public static VendorSpecificAttribute CreateInt32(uint vendorId, byte vendorSpecificType, int vendorSpecificData)
 		{
-			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, RadiusUtils.GetNetworkBytes(vendorSpecificData));
 		}
 
 		public static VendorSpecificAttribute CreateUInt32(uint vendorId, byte vendorSpecificType, uint vendorSpecificData)
 		{
-			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, RadiusUtils.GetNetworkBytes(vendorSpecificData));
 		}
 
 		public static VendorSpecificAttribute CreateInt64(uint vendorId, byte vendorSpecificType, long vendorSpecificData)
 		{
-			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, RadiusUtils.GetNetworkBytes(vendorSpecificData));
 		}
 
 		public static VendorSpecificAttribute CreateUInt64(uint vendorId, byte vendorSpecificType, ulong vendorSpecificData)
 		{
-			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, RadiusUtils.GetNetworkBytes(vendorSpecificData));
 		}
 
 		/// <summary>

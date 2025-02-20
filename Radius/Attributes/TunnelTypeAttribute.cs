@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Radius.Atributes;
-using Radius.Enums;
+﻿using Radius.Enum;
+using Radius.Utils;
+using System;
 
-namespace Radius
+namespace Radius.Attributes
 {
 	/// <summary>
 	/// http://tools.ietf.org/html/rfc2868
@@ -31,9 +27,9 @@ namespace Radius
 
 			RawData[0] = (byte)Type;
 			RawData[1] = Length;
-			RawData[2] = ((tag & 0xFF) == 0) ? (byte)0x00 : tag;
+			RawData[2] = (tag & 0xFF) == 0 ? (byte)0x00 : tag;
 
-			Array.Copy(Utils.IntTo3Byte((int)tunnelType), 0, RawData, TUNNEL_TYPE_VALUE_INDEX, TUNNEL_TYPE_VALUE_LENGTH);
+			Array.Copy(RadiusUtils.IntTo3Byte((int)tunnelType), 0, RawData, TUNNEL_TYPE_VALUE_INDEX, TUNNEL_TYPE_VALUE_LENGTH);
 		}
 	}
 }

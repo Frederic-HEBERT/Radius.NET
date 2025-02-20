@@ -1,12 +1,10 @@
-﻿using Radius.Enums;
+﻿using Radius.Enum;
+using Radius.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Radius.Atributes
+namespace Radius.Attributes
 {
 	public class RadiusAttribute
 	{
@@ -38,19 +36,19 @@ namespace Radius.Atributes
 					case RadiusAttributeType.FRAMED_PROTOCOL:
 					case RadiusAttributeType.FRAMED_IPV6_PREFIX:
 						Array.Reverse(Data);
-						return ((Protocol)(BitConverter.ToInt32(Data, 0))).ToString();
+						return ((Protocol)BitConverter.ToInt32(Data, 0)).ToString();
 					case RadiusAttributeType.FRAMED_ROUTING:
 						Array.Reverse(Data);
-						return ((Routing)(BitConverter.ToInt32(Data, 0))).ToString();
+						return ((Routing)BitConverter.ToInt32(Data, 0)).ToString();
 					case RadiusAttributeType.SERVICE_TYPE:
 						Array.Reverse(Data);
-						return ((Service)(BitConverter.ToInt32(Data, 0))).ToString();
+						return ((Service)BitConverter.ToInt32(Data, 0)).ToString();
 					case RadiusAttributeType.FRAMED_COMPRESSION:
 						Array.Reverse(Data);
-						return ((Compression)(BitConverter.ToInt32(Data, 0))).ToString();
+						return ((Compression)BitConverter.ToInt32(Data, 0)).ToString();
 					case RadiusAttributeType.LOGIN_SERVICE:
 						Array.Reverse(Data);
-						return ((Login)(BitConverter.ToInt32(Data, 0))).ToString();
+						return ((Login)BitConverter.ToInt32(Data, 0)).ToString();
 					case RadiusAttributeType.FILTER_ID:
 					case RadiusAttributeType.CALLBACK_NUMBER:
 					case RadiusAttributeType.REPLY_MESSAGE:
@@ -59,11 +57,11 @@ namespace Radius.Atributes
 					case RadiusAttributeType.FRAMED_MTU:
 					case RadiusAttributeType.LOGIN_TCP_PORT:
 						Array.Reverse(Data);
-						return (BitConverter.ToInt32(Data, 0)).ToString();
+						return BitConverter.ToInt32(Data, 0).ToString();
 					case RadiusAttributeType.TUNNEL_TYPE:
-						return ((TunnelType)Utils.ThreeBytes2UInt(Data, 0)).ToString();
+						return ((TunnelType)RadiusUtils.ThreeBytes2UInt(Data, 0)).ToString();
 					case RadiusAttributeType.TUNNEL_MEDIUM_TYPE:
-						return ((TunnelMediumType)Utils.ThreeBytes2UInt(Data, 0)).ToString();
+						return ((TunnelMediumType)RadiusUtils.ThreeBytes2UInt(Data, 0)).ToString();
 					default:
 						return BitConverter.ToString(Data);
 				}
@@ -94,32 +92,32 @@ namespace Radius.Atributes
 
 		public static RadiusAttribute CreateInt16(RadiusAttributeType type, short data)
 		{
-			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+			return new RadiusAttribute(type, RadiusUtils.GetNetworkBytes(data));
 		}
 
 		public static RadiusAttribute CreateUInt16(RadiusAttributeType type, ushort data)
 		{
-			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+			return new RadiusAttribute(type, RadiusUtils.GetNetworkBytes(data));
 		}
 
 		public static RadiusAttribute CreateInt32(RadiusAttributeType type, int data)
 		{
-			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+			return new RadiusAttribute(type, RadiusUtils.GetNetworkBytes(data));
 		}
 
 		public static RadiusAttribute CreateUInt32(RadiusAttributeType type, uint data)
 		{
-			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+			return new RadiusAttribute(type, RadiusUtils.GetNetworkBytes(data));
 		}
 
 		public static RadiusAttribute CreateInt64(RadiusAttributeType type, long data)
 		{
-			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+			return new RadiusAttribute(type, RadiusUtils.GetNetworkBytes(data));
 		}
 
 		public static RadiusAttribute CreateUInt64(RadiusAttributeType type, ulong data)
 		{
-			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+			return new RadiusAttribute(type, RadiusUtils.GetNetworkBytes(data));
 		}
 
 		/// <summary>

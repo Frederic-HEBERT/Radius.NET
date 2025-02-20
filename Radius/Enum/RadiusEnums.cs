@@ -1,4 +1,4 @@
-namespace Radius.Enums
+namespace Radius.Enum
 {
 	public enum RadiusCode : byte
 	{

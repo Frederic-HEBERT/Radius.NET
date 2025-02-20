@@ -1,23 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <AssemblyTitle>Radius.NET</AssemblyTitle>
     <Company>Frederic HEBERT</Company>
     <Product>Radius</Product>
-    <Description>Radius client in .NET6</Description>
+    <Description>Radius client in .NET9</Description>
     <Copyright>Copyright 2022</Copyright>
-    <Version>1.0.5.0</Version>
-    <AssemblyVersion>1.0.5.0</AssemblyVersion>
-    <FileVersion>1.0.5.0</FileVersion>
+    <Version>1.0.6.0</Version>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.6.0</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Frederic HEBERT</Authors>
     <PackageProjectUrl>https://github.com/Frederic-HEBERT/Radius.NET</PackageProjectUrl>
     <PackageReleaseNotes>
 Fork from Front Porch Inc.
-Using .NET6
+Using .NET9
 Change Cryptographic method
+Correct some namespaces
 	</PackageReleaseNotes>
-    <PackageTags>Radius Client .NET6</PackageTags>
+    <PackageTags>Radius Client .NET9</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>$(AssemblyName)Client</PackageId>
     <RepositoryUrl>https://github.com</RepositoryUrl>

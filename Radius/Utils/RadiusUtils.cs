@@ -1,9 +1,9 @@
 using System;
 using System.Security.Cryptography;
 
-namespace Radius
+namespace Radius.Utils
 {
-    public class Utils
+    public class RadiusUtils
     {
         public static byte[] AccountingRequestAuthenticator(byte[] data, string sharedSecret)
         {
@@ -57,7 +57,7 @@ namespace Radius
 
             byte[] encryptedPass = userPassBytes.Length % 16 == 0
                 ? new byte[userPassBytes.Length]
-                : new byte[((userPassBytes.Length / 16) * 16) + 16];
+                : new byte[userPassBytes.Length / 16 * 16 + 16];
 
             Array.Copy(userPassBytes, 0, encryptedPass, 0, userPassBytes.Length);
 
@@ -66,7 +66,7 @@ namespace Radius
 
             byte[] sharedSecretBytes = System.Text.Encoding.ASCII.GetBytes(sharedSecret);
 
-            for (int chunk = 0; chunk < (encryptedPass.Length / 16); chunk++)
+            for (int chunk = 0; chunk < encryptedPass.Length / 16; chunk++)
             {
                 var md5 = MD5.Create();
 
@@ -95,7 +95,7 @@ namespace Radius
         /// <returns></returns>
         public static byte[] UintTo3Byte(uint val)
         {
-            return new byte[] { (byte)(val >> 16 & 0xFF), (byte)(val >> 8 & 0xFF), (byte)(val & 0xFF) };
+            return [(byte)(val >> 16 & 0xFF), (byte)(val >> 8 & 0xFF), (byte)(val & 0xFF)];
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Radius
             byte[] shortArray = new byte[sizeOf];
             for (int i = 0; i < sizeOf; i++)
             {
-                shortArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+                shortArray[i * -1 + sizeOf - 1] = (byte)(value & 0xFF);
                 value = (short)(value >> 8);
             }
 
@@ -135,7 +135,7 @@ namespace Radius
             byte[] ushortArray = new byte[sizeOf];
             for (int i = 0; i < sizeOf; i++)
             {
-                ushortArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+                ushortArray[i * -1 + sizeOf - 1] = (byte)(value & 0xFF);
                 value = (ushort)(value >> 8);
             }
 
@@ -148,7 +148,7 @@ namespace Radius
             byte[] intArray = new byte[sizeOf];
             for (int i = 0; i < sizeOf; i++)
             {
-                intArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+                intArray[i * -1 + sizeOf - 1] = (byte)(value & 0xFF);
                 value = value >> 8;
             }
 
@@ -161,7 +161,7 @@ namespace Radius
             byte[] uintArray = new byte[sizeOf];
             for (int i = 0; i < sizeOf; i++)
             {
-                uintArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+                uintArray[i * -1 + sizeOf - 1] = (byte)(value & 0xFF);
                 value = value >> 8;
             }
 
@@ -174,7 +174,7 @@ namespace Radius
             byte[] longArray = new byte[sizeOf];
             for (int i = 0; i < sizeOf; i++)
             {
-                longArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+                longArray[i * -1 + sizeOf - 1] = (byte)(value & 0xFF);
                 value = value >> 8;
             }
 
@@ -187,7 +187,7 @@ namespace Radius
             byte[] ulongArray = new byte[sizeOf];
             for (int i = 0; i < sizeOf; i++)
             {
-                ulongArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+                ulongArray[i * -1 + sizeOf - 1] = (byte)(value & 0xFF);
                 value = value >> 8;
             }
 

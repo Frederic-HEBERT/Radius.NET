@@ -6,8 +6,9 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Radius.Atributes;
-using Radius.Enums;
+using Radius.Attributes;
+using Radius.Enum;
+using Radius.Utils;
 
 namespace Radius
 {
@@ -21,21 +22,21 @@ namespace Radius
         #endregion
 
         #region Private
-        private string _SharedSecret = String.Empty;
-        private string _HostName = String.Empty;
-        private uint _AuthPort = DEFAULT_AUTH_PORT;
-        private uint _AcctPort = DEFAULT_ACCT_PORT;
-        private uint _AuthRetries = DEFAULT_RETRIES;
-        private uint _AcctRetries = DEFAULT_RETRIES;
-        private int _SocketTimeout = DEFAULT_SOCKET_TIMEOUT;
-        private IPEndPoint _LocalEndPoint;
+        private string _sharedSecret = String.Empty;
+        private string _hostName = String.Empty;
+        private uint _authPort = DEFAULT_AUTH_PORT;
+        private uint _acctPort = DEFAULT_ACCT_PORT;
+        private uint _authRetries = DEFAULT_RETRIES;
+        private uint _acctRetries = DEFAULT_RETRIES;
+        private int _socketTimeout = DEFAULT_SOCKET_TIMEOUT;
+        private IPEndPoint _localEndPoint;
         #endregion
 
         #region Properties
         public int SocketTimeout
         {
-            get { return _SocketTimeout; }
-            set { _SocketTimeout = value; }
+            get { return _socketTimeout; }
+            set { _socketTimeout = value; }
         }
         #endregion
 
@@ -46,12 +47,12 @@ namespace Radius
                             uint acctPort = DEFAULT_ACCT_PORT,
                             IPEndPoint localEndPoint = null)
         {
-            _HostName = hostName;
-            _AuthPort = authPort;
-            _AcctPort = acctPort;
-            _LocalEndPoint = localEndPoint;
-            _SharedSecret = sharedSecret;
-            _SocketTimeout = sockTimeout;
+            _hostName = hostName;
+            _authPort = authPort;
+            _acctPort = acctPort;
+            _localEndPoint = localEndPoint;
+            _sharedSecret = sharedSecret;
+            _socketTimeout = sockTimeout;
         }
         #endregion
 
@@ -60,7 +61,7 @@ namespace Radius
         {
             RadiusPacket packet = new RadiusPacket(RadiusCode.ACCESS_REQUEST);
             packet.SetAuthenticator();
-            byte[] encryptedPass = Utils.EncodePapPassword(Encoding.ASCII.GetBytes(password), packet.Authenticator, _SharedSecret);
+            byte[] encryptedPass = RadiusUtils.EncodePapPassword(Encoding.ASCII.GetBytes(password), packet.Authenticator, _sharedSecret);
             packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_NAME, Encoding.ASCII.GetBytes(username)));
             packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_PASSWORD, encryptedPass));
             return packet;
@@ -68,9 +69,9 @@ namespace Radius
 
         public async Task<RadiusPacket> SendAndReceivePacket(RadiusPacket packet, int retries = DEFAULT_RETRIES)
         {
-            using (UdpClient udpClient = new UdpClient())
+            using (UdpClient udpClient = new())
             {
-                udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, _SocketTimeout);
+                udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, _socketTimeout);
 
                 IPAddress hostIP = null;
 
@@ -80,16 +81,16 @@ namespace Radius
                     // will be sent out a particular interface
                     // This is explained in the following blog
                     // http://blogs.technet.com/b/networking/archive/2009/04/25/source-ip-address-selection-on-a-multi-homed-windows-computer.aspx
-                    if (_LocalEndPoint != null)
-                        udpClient.Client.Bind(_LocalEndPoint);
+                    if (_localEndPoint != null)
+                        udpClient.Client.Bind(_localEndPoint);
 
-                    if (!IPAddress.TryParse(_HostName, out hostIP))
+                    if (!IPAddress.TryParse(_hostName, out hostIP))
                     {
                         //Try performing a DNS lookup
-                        var host = Dns.GetHostEntry(_HostName);
+                        var host = Dns.GetHostEntry(_hostName);
                         hostIP = host.AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
                         if (hostIP == null)
-                            throw new Exception("Resolving " + _HostName + " returned no hits in DNS");
+                            throw new Exception("Resolving " + _hostName + " returned no hits in DNS");
 
                     }
                 }
@@ -103,7 +104,7 @@ namespace Radius
                         return null;
                 }
 
-                var destinationPort = packet.PacketType == RadiusCode.ACCOUNTING_REQUEST || packet.PacketType == RadiusCode.ACCOUNTING_RESPONSE ? _AcctPort : _AuthPort;
+                var destinationPort = packet.PacketType == RadiusCode.ACCOUNTING_REQUEST || packet.PacketType == RadiusCode.ACCOUNTING_RESPONSE ? _acctPort : _authPort;
 
                 var endPoint = new IPEndPoint(hostIP, (int)destinationPort);
                 int numberOfAttempts = 0;
@@ -142,9 +143,9 @@ namespace Radius
             // Create a new RADIUS packet with the Server-Status code
             RadiusPacket authPacket = new RadiusPacket(RadiusCode.SERVER_STATUS);
             // Populate the Request-Authenticator
-            authPacket.SetAuthenticator(_SharedSecret);
+            authPacket.SetAuthenticator(_sharedSecret);
             // Add the Message-Authenticator as a last step.  Note: Server-Status packets don't require any other attributes
-            authPacket.SetMessageAuthenticator(_SharedSecret);
+            authPacket.SetMessageAuthenticator(_sharedSecret);
             // We MUST NOT retransmit Server-Status packets according to https://tools.ietf.org/html/rfc5997
             return await SendAndReceivePacket(authPacket, 0);
         }
@@ -154,7 +155,7 @@ namespace Radius
         public bool VerifyAuthenticator(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
         {
             return requestedPacket.Identifier == receivedPacket.Identifier
-                && receivedPacket.Authenticator.SequenceEqual(Utils.ResponseAuthenticator(receivedPacket.RawData, requestedPacket.Authenticator, _SharedSecret));
+                && receivedPacket.Authenticator.SequenceEqual(RadiusUtils.ResponseAuthenticator(receivedPacket.RawData, requestedPacket.Authenticator, _sharedSecret));
         }
 
         public static bool VerifyAccountingAuthenticator(byte[] radiusPacket, string secret)
@@ -170,9 +171,7 @@ namespace Radius
             Array.Copy(secretBytes, 0, sum, radiusPacket.Length, secretBytes.Length);
             Array.Clear(sum, 4, 16);
 
-            var md5 = MD5.Create();
-
-            var hash = md5.ComputeHash(sum, 0, sum.Length);
+            var hash = MD5.HashData(sum.AsSpan(0, sum.Length));
             return authenticator.SequenceEqual(hash);
         }
         #endregion
